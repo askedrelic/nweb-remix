@@ -12,3 +12,4 @@ Designed for Debian 5.0 stable(lenny) while pulling the latest packges from test
 * install nginx 0.7x from deb testing
 * install php 5.2.12 with php-fpm and apc from source
 * install mysql 5.1.47 from deb testing
+

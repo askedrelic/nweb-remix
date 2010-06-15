@@ -1,0 +1,5 @@
+-add mysql to the script
+-add php5.3 version
+-genericize the script
+-move heredocs to seperate files
+-use slicehost folder layout for www dir
