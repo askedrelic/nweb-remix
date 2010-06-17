@@ -21,8 +21,8 @@ apt-get -y -t testing install htop less git-core rsync
 
 #edit nginx.conf HERE
 cp -f $cwd/conf/nginx.conf /etc/nginx/nginx.conf
-cp -f $cwd/conf/default-www /etc/nginx/sites-enabled/
-#delete default
+cp -f $cwd/conf/default-www /etc/nginx/sites-available/
+ln -s /etc/nginx/sites-available/default-www /etc/nginx/sites-enabled/default-www
 rm /etc/nginx/sites-enabled/default
 
 #config nginx, prepend params
