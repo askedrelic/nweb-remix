@@ -1,30 +1,29 @@
 #get current working dir
 cwd=$(pwd)
+www=/var/www/default-www
 
 #setup apt stable
 echo "APT::Default-Release \"stable\";" >> /etc/apt/apt.conf
 echo "deb http://http.us.debian.org/debian/ testing main contrib non-free" >> /etc/apt/sources.list
 echo "deb-src http://http.us.debian.org/debian/ testing main contrib non-free" >> /etc/apt/sources.list
 apt-get -y update
-#TODO: fix restart screen that comes up for cron
-apt-get -y upgrade
 
+#TODO: fix restart screen that comes up for cron
 #Configuring libpam0g
 #configur libc6
+apt-get -y upgrade
 
 #nginx 0.7.65 should be
 apt-get -t testing -y install nginx
 
+#my apps
 apt-get -y -t testing install htop less git-core rsync
 
 #edit nginx.conf HERE
-cat > /etc/nginx/nginx.conf <<heredoc
-
-heredoc
-
-cat > /etc/nginx/sites-enabled/default <<heredoc
-
-heredoc
+cp -f $cwd/conf/nginx.conf /etc/nginx/nginx.conf
+cp -f $cwd/conf/default-www /etc/nginx/sites-enabled/
+#delete default
+rm /etc/nginx/sites-enabled/default
 
 #config nginx, prepend params
 echo 'fastcgi_connect_timeout 60;
@@ -39,7 +38,9 @@ cat /etc/nginx/fastcgi_params >> /tmp/fastcgitmp
 cp /tmp/fastcgitmp /etc/nginx/fastcgi_params
 
 #make www directory for nginx
-mkdir -p /var/www/
+mkdir -p $www/{public,private,log}
+touch $www/log/access.log
+touch $www/log/error.log
 
 #install stuff to build php
 #TODO: libc6 requires cron restart
@@ -56,12 +57,12 @@ cd php-5.2.13
 make all install
 strip /usr/local/bin/php-cgi
 
-#has stupid options
+#TODO fix stupid options
 pecl install apc-beta
 
 #move apc build files to useful locations
 #WARNING maybe break if build changes?
-cp /usr/local/lib/php/apc.php /var/www/apc.php
+cp /usr/local/lib/php/apc.php $www/public/apc.php
 cp /usr/local/lib/php/extensions/no-debug-non-zts-20060613/apc.so /usr/local/lib/php/extensions/apc.so
 
 mkdir /etc/php/
@@ -80,20 +81,18 @@ echo "apc.enable_cli = 1" >> /etc/php/php.ini
 echo "apc.stat = 0" >> /etc/php/php.ini
 
 #edit php-fpm.ini HERE
-cat > /etc/php/php-fpm.conf <<heredoc
-
-heredoc
+cp -f $cwd/conf/php-fpm.conf /etc/php/php-fpm.conf
 
 #linux network tweaks for more connections
 #TEMPORARY, this will be reset after reboot
-echo 30 > /proc/sys/net/ipv4/tcp_fin_timeout
-echo 30 > /proc/sys/net/ipv4/tcp_keepalive_intvl
-echo 5 > /proc/sys/net/ipv4/tcp_keepalive_probes
-echo 1 > /proc/sys/net/ipv4/tcp_tw_reuse
+#echo 30 > /proc/sys/net/ipv4/tcp_fin_timeout
+#echo 30 > /proc/sys/net/ipv4/tcp_keepalive_intvl
+#echo 5 > /proc/sys/net/ipv4/tcp_keepalive_probes
+#echo 1 > /proc/sys/net/ipv4/tcp_tw_reuse
 ulimit -n 50000
 
 #setup test page to verify it works
-echo "<?php phpinfo(); ?>" > /var/www/index.php
+echo "<?php phpinfo(); ?>" > $www/public/index.php
 
 #run things
 export PATH=/usr/local/sbin:$PATH
