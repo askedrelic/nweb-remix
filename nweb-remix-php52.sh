@@ -15,7 +15,7 @@ cat $cwd/conf/apt.seed | debconf-set-selections
 #TODO: fix restart screen that comes up for cron
 #Configuring libpam0g
 #configur libc6
-apt-get -y upgrade
+apt-get -y --force-yes upgrade
 
 #nginx 0.7.65 should be
 apt-get -t testing -y install nginx
