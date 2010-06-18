@@ -8,6 +8,10 @@ echo "deb http://http.us.debian.org/debian/ testing main contrib non-free" >> /e
 echo "deb-src http://http.us.debian.org/debian/ testing main contrib non-free" >> /etc/apt/sources.list
 apt-get -y update
 
+#set debconf settings?
+apt-get -y install debconf-utils
+cat $cwd/conf/apt.seed | debconf-set-selections
+
 #TODO: fix restart screen that comes up for cron
 #Configuring libpam0g
 #configur libc6

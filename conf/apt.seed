@@ -1,0 +1,4 @@
+libc6   glibc/restart-services  string  cron
+libc6   glibc/upgrade   boolean true
+libpam0g        libpam0g/restart-services       string
+udev    udev/new_kernel_needed  boolean false
